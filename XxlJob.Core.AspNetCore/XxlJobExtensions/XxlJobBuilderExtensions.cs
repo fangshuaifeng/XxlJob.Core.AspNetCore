@@ -37,11 +37,33 @@ namespace XxlJob.Core.AspNetCore.XxlJobExtensions
         /// <summary>
         /// 注入服务
         /// </summary>
-        public static IXxlJobBuilder AddXxlJobService(this IServiceCollection services, IConfiguration configuration)
+        public static IXxlJobBuilder AddXxlJobService(this IServiceCollection services, IConfiguration configuration, Action<XxlJobOptions> configAction = null)
         {
             services.AddSingleton<IJobFactory, DefaultJobFactory>();
             services.AddSingleton<ITaskExecutor, DefaultBeanTaskExecutor>();
-            return services.AddXxlJob(configuration);
+
+            return services.AddXxlJob((cfg) =>
+            {
+                cfg = configuration.GetSection("xxlJob").Get<XxlJobOptions>();
+                if (cfg == null) throw new Exception("请在配置文件配置xxlJob节点");
+
+                if (string.IsNullOrEmpty(cfg.IpAddress))
+                {
+                    var strIp = Environment.GetEnvironmentVariable("ip");
+                    cfg.IpAddress = strIp;
+                }
+
+                if (cfg.Port == 0)
+                {
+                    var strPort = Environment.GetEnvironmentVariable("port");
+                    if (!string.IsNullOrEmpty(strPort))
+                    {
+                        cfg.Port = Convert.ToInt32(strPort);
+                    }
+                }
+
+                configAction?.Invoke(cfg);
+            });
         }
 
         /// <summary>
