@@ -5,6 +5,7 @@
     <Version>1.0.0</Version>
     <Authors>fangshuaifeng</Authors>
     <Company>renzicu</Company>
+    <PackageProjectUrl>https://github.com/fangshuaifeng/XxlJob.Core.AspNetCore</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
