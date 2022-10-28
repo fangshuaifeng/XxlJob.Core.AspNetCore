@@ -6,6 +6,7 @@
     <Authors>fangshuaifeng</Authors>
     <Company>renzicu</Company>
     <PackageProjectUrl>https://github.com/fangshuaifeng/XxlJob.Core.AspNetCore</PackageProjectUrl>
+    <Description>开源分布式任务框架xxl-job的AspNetCore执行器，包含分片广播</Description>
   </PropertyGroup>
 
   <ItemGroup>
