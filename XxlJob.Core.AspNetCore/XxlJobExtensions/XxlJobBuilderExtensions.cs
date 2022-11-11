@@ -42,9 +42,9 @@ namespace XxlJob.Core.AspNetCore.XxlJobExtensions
             services.AddSingleton<IJobFactory, DefaultJobFactory>();
             services.AddSingleton<ITaskExecutor, DefaultBeanTaskExecutor>();
 
+            services.AddXxlJob(configuration);
             return services.AddXxlJob((cfg) =>
             {
-                cfg = configuration.GetSection("xxlJob").Get<XxlJobOptions>();
                 if (cfg == null) throw new Exception("请在配置文件配置xxlJob节点");
 
                 if (string.IsNullOrEmpty(cfg.IpAddress))
