@@ -47,9 +47,11 @@ namespace XxlJob.Core.AspNetCore.XxlJobExtensions
                 {
                     try
                     {
-                        result = await handler.Execute(new JobContext(_jobLogger
-                                                                        , triggerParam.ExecutorParams, new BroadCastModel(triggerParam.BroadcastIndex, triggerParam.BroadcastTotal)
-                                                                        , cancellationToken)).ConfigureAwait(continueOnCapturedContext: false);
+                        result = await handler.Execute(new JobContext(new LockerLogger(_jobLogger)
+                                                                        , triggerParam.ExecutorParams
+                                                                        , new BroadCastModel(triggerParam.BroadcastIndex, triggerParam.BroadcastTotal)
+                                                                        , cancellationToken)
+                            ).ConfigureAwait(continueOnCapturedContext: false);
                     }
                     finally
                     {
