@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="XxlJob2.AspNetCore" Version="1.1.2" />
+    <PackageReference Include="XxlJob2.AspNetCore" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

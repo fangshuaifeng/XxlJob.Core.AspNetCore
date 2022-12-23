@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-using System;
-using XxlJob.Core;
 
 namespace XxlJob.Core.AspNetCore.XxlJobExtensions
 {
@@ -24,42 +23,28 @@ namespace XxlJob.Core.AspNetCore.XxlJobExtensions
 
         public IReadOnlyDictionary<string, JobHandlerStruct> JobHandlers => _jobHandlers;
 
-        public void AddJob<TJob>() where TJob : class, IJobBaseHandler
-        {
+        public void AddJob<TJob>() where TJob : class, IJobBaseHandler =>
             AddJob(typeof(TJob).GetCustomAttribute<JobHandlerAttribute>()?.Name ?? typeof(TJob).Name, typeof(TJob));
-        }
 
-        public void AddJob(Type jobType)
-        {
+        public void AddJob(Type jobType) =>
             AddJob(jobType.GetCustomAttribute<JobHandlerAttribute>()?.Name ?? jobType.Name, jobType);
-        }
 
-        public void AddJob<TJob>(string jobName) where TJob : class, IJobBaseHandler
-        {
+        public void AddJob<TJob>(string jobName) where TJob : class, IJobBaseHandler =>
             AddJob(jobName, typeof(TJob));
-        }
 
         public void AddJob(string jobName, Type jobType)
         {
             if (!typeof(IJobBaseHandler).IsAssignableFrom(jobType))
-            {
-                throw new ArgumentException(jobType.FullName + " not implement " + typeof(IJobBaseHandler).FullName, "jobType");
-            }
+                throw new ArgumentException($"{jobType.FullName} not implement {typeof(IJobBaseHandler).FullName}", nameof(jobType));
 
             if (jobType.IsAbstract)
-            {
-                throw new ArgumentException(jobType.FullName + " should not abstract.", "jobType");
-            }
+                throw new ArgumentException($"{jobType.FullName} should not abstract.", nameof(jobType));
 
             if (!jobType.IsClass)
-            {
-                throw new ArgumentException(jobType.FullName + " must be class.", "jobType");
-            }
+                throw new ArgumentException($"{jobType.FullName} must be class.", nameof(jobType));
 
             if (_jobHandlers.ContainsKey(jobName))
-            {
-                throw new Exception("Same IJobHandler' name: [" + jobName + "]");
-            }
+                throw new Exception($"Same IJobHandler' name: [{jobName}]");
 
             _jobHandlers.Add(jobName, new JobHandlerStruct(null, jobType));
         }

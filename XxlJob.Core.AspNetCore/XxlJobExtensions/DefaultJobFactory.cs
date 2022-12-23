@@ -16,15 +16,9 @@ namespace XxlJob.Core.AspNetCore.XxlJobExtensions
         {
             private readonly IJobBaseHandler _handler;
 
-            public JobHandlerWrapperInner(IJobBaseHandler handler)
-            {
-                _handler = handler;
-            }
+            public JobHandlerWrapperInner(IJobBaseHandler handler) => _handler = handler;
 
-            public Task<ReturnT> Execute(JobContext context)
-            {
-                return _handler.Execute(context);
-            }
+            public Task<ReturnT> Execute(JobContext context) => _handler.Execute(context);
         }
 
         private readonly JobOptions _options;
@@ -32,36 +26,23 @@ namespace XxlJob.Core.AspNetCore.XxlJobExtensions
         public DefaultJobFactory(IOptions<JobOptions> options, IEnumerable<IJobBaseHandler> jobHandlers)
         {
             _options = options.Value;
-            foreach (IJobBaseHandler jobHandler in jobHandlers)
-            {
-                _options.AddJob(jobHandler);
-            }
+
+            foreach (var handler in jobHandlers) _options.AddJob(handler);
         }
 
         public IJobBaseHandler GetJobHandler(IServiceProvider provider, string handlerName)
         {
-            if (!_options.JobHandlers.TryGetValue(handlerName, out var value))
-            {
-                return null;
-            }
+            if (!_options.JobHandlers.TryGetValue(handlerName, out var jobHandler)) return null;
 
-            if (value.Job != null)
-            {
-                return value.Job;
-            }
+            if (jobHandler.Job != null) return jobHandler.Job;
 
-            if (value.JobType == null)
-            {
-                return null;
-            }
+            if (jobHandler.JobType == null) return null;
 
-            object service = provider.GetService(value.JobType);
-            if (service is IDisposable)
-            {
-                return new JobHandlerWrapperInner((IJobBaseHandler)service);
-            }
+            var job = provider.GetService(jobHandler.JobType);
 
-            return (IJobBaseHandler)(service ?? ActivatorUtilities.CreateInstance(provider, value.JobType));
+            if (job is IDisposable) return new JobHandlerWrapperInner((IJobBaseHandler)job);
+
+            return (IJobBaseHandler)(job ?? ActivatorUtilities.CreateInstance(provider, jobHandler.JobType));
         }
     }
 }
